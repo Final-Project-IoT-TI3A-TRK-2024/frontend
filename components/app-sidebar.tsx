@@ -2,17 +2,11 @@
 
 import * as React from "react"
 import {
-    Banknote, ChartNetwork,
-    Coins,
+    ChartNetwork,
     Command, Database,
-    GlobeIcon,
-    HandCoins,
-    PieChart, Scroll,
-    Settings2,
-    Users
+    Scroll
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -27,8 +21,8 @@ import {
 
 const sidebarMenus = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Fuad",
+    email: "fuad@polingawi.ac.id",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
@@ -64,8 +58,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">IoT Teraweh</span>
-                  <span className="truncate text-xs">Atmint</span>
+                  <span className="truncate font-semibold">IoT Agriculture</span>
+                  <span className="truncate text-xs">Fuad</span>
                 </div>
               </a>
             </SidebarMenuButton>
