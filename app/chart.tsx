@@ -57,7 +57,7 @@ export function LiveChart({ icon: Icon, label, color, data, key_name }) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => new Date(value).toLocaleTimeString("en-US", { minute: "2-digit", second: "2-digit" })}
+              tickFormatter={(value) => new Date(value * 1000).toLocaleTimeString("en-US", { minute: "2-digit", second: "2-digit" })}
             />
             <ChartTooltip
               cursor={false}
