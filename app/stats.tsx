@@ -9,13 +9,19 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import {Droplet, HardDriveUpload, Thermometer, TrendingUpDown, Waves, Wheat} from "lucide-react";
+import {CloudOff, Droplet, HardDriveUpload, Thermometer, Waves, Wheat} from "lucide-react";
 import {LiveChart} from "@/app/chart";
 import {useEffect, useState} from "react";
 import { io } from "socket.io-client";
 import {Button} from "@/components/ui/button";
 import Predict from "@/app/predict";
-const socket = io("http://localhost:5000");
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+
+const socket = io("http://192.168.0.171:5000");
 
 type TemperatureData = {
   timestamp: number;
@@ -43,6 +49,8 @@ export default function Stats(){
   const [temperature, setTemperature] = useState([{timestamp: 0, temperature: 0}]);
   const [humidity, setHumidity] = useState([{timestamp: 0, humidity: 0}]);
   const [soilMoisture, setSoilMoisture] = useState([{timestamp: 0, soil_moisture: 0}]);
+  const [connected, setConnected] = useState(false);
+  const [soilSensorStatus, setSoilSensorStatus] = useState(false);
 
   useEffect(() => {
     socket.on('data', (data) => {
@@ -60,8 +68,24 @@ export default function Stats(){
       setHumidity(humidities);
       setTemperature(temperatures);
       setSoilMoisture(soilMoistures);
+      setConnected(true);
 
+      // range soil moisture 800 - 1000 is indicate that the sensor is not placed in the soil correctly
+      if (json_data[0].soil_moisture >= 750 && json_data[0].soil_moisture <= 1000) {
+        setSoilSensorStatus(false);
+      }else{
+        setSoilSensorStatus(true);
+      }
     });
+
+    socket.on('disconnect', () => {
+      setConnected(false);
+    });
+
+    socket.on('connect_error', () => {
+      setConnected(false);
+    });
+
   }, []);
 
   return (
@@ -70,19 +94,41 @@ export default function Stats(){
         <CardTitle>
           <div className="flex items-center gap-2">
             <Wheat className="align-middle"/>
-            <h3 className="align-middle font-semibold text-2xl">Crop Recommendation System</h3>
+            <h3 className="align-middle font-semibold text-2xl">Crop Irrigation Scheduling System</h3>
           </div>
         </CardTitle>
         <CardDescription>
           <div className="flex items-center text-sm gap-2">
             <div className="text-gray-500 dark:text-gray-400 flex items-center gap-2">
-              <span className="inline-block w-2 h-2 bg-[#09CE6B] rounded-full animate-ping duration-[5000]"/>
-              Live Data Stream
+              <span className={`inline-block w-2 h-2 bg-[#${connected ? "09CE6B" : "F87171"}] rounded-full animate-ping duration-[5000]`}/>
+              <span>{connected ? "Live data stream" : "Data stream is currently unavailable"}</span>
             </div>
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {connected ? null : (
+          <div className={"mb-4"}>
+            <Alert variant={'destructive'}>
+            <CloudOff className="h-4 w-4"/>
+            <AlertTitle>Socket Disconnected</AlertTitle>
+            <AlertDescription>
+              Socket is not connected, please check your socket connection.
+            </AlertDescription>
+            </Alert>
+          </div>
+        )}
+        {!soilSensorStatus ? (
+          <div className={"mb-4"}>
+            <Alert variant={'destructive'}>
+            <CloudOff className="h-4 w-4"/>
+            <AlertTitle>Soil Sensor Error</AlertTitle>
+            <AlertDescription>
+              Soil sensor is not placed in the soil correctly or the soil is too dry!
+            </AlertDescription>
+            </Alert>
+          </div>
+        ) : null}
         <div className="grid grid-cols-3 gap-4">
           <div>
             <LiveChart label="Temperature" icon={Thermometer} color={"red"} data={temperature} key_name="temperature"/>
