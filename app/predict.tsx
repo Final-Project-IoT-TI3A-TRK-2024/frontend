@@ -18,6 +18,8 @@ import {Button} from "@/components/ui/button";
 import {Flower2, TrendingUpDown} from "lucide-react";
 import {useState} from "react";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 const sendData = async (crop_type, temperature, humidity, soil_moisture) => {
   const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/predict", {
     method: "POST",
@@ -35,6 +37,8 @@ const sendData = async (crop_type, temperature, humidity, soil_moisture) => {
   return response.json()
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 export default function Predict({data}) {
   const latest_data = data?.[0] || {
     temperature: 0,
