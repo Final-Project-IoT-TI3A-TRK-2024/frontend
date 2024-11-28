@@ -20,7 +20,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 
-const socket = io("http://192.168.0.171:5000");
+const socket = io(process.env.BACKEND_URL);
 
 type TemperatureData = {
   timestamp: number;
