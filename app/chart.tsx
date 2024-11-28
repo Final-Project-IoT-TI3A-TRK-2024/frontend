@@ -17,6 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import {soil_moistureData, HumidityData, TemperatureData} from "@/app/stats";
+import React from "react";
 
 const chartConfig = {
   temperature: {
@@ -25,7 +27,15 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function LiveChart({ icon: Icon, label, color, data, key_name }) {
+type LiveChartProps = {
+  icon: React.ElementType;
+  label: string;
+  color: string;
+  data: HumidityData | TemperatureData | soil_moistureData [];
+  key_name: string;
+}
+
+export function LiveChart({ icon: Icon, label, color, data, key_name }: LiveChartProps) {
   const latestData = data[0]
   return (
     <Card>

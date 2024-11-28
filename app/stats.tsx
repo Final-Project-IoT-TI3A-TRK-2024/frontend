@@ -22,17 +22,17 @@ import {
 
 const socket = io(process.env.BACKEND_URL);
 
-type TemperatureData = {
+export type TemperatureData = {
   timestamp: number;
   temperature: number;
 }
 
-type HumidityData = {
+export type HumidityData = {
   timestamp: number;
   humidity: number;
 }
 
-type soil_moistureData = {
+export type soil_moistureData = {
   timestamp: number;
   soil_moisture: number;
 }
