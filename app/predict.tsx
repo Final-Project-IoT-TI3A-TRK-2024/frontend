@@ -44,7 +44,6 @@ export default function Predict({data}) {
 
   const [prediction, setPrediction] = useState(null)
   const [predicted, setPredicted] = useState(false)
-  const [open, setOpen] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState("");
 
   const cropOptions = [
@@ -68,7 +67,6 @@ export default function Predict({data}) {
   const handleDialogClose = () => {
     setPredicted(false);
     setPrediction(null);
-    setOpen(false);
   };
 
   return (
