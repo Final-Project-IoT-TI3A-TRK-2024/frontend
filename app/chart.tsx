@@ -26,7 +26,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function LiveChart({ icon: Icon, label, color, data, key_name }) {
-  const latestData = data[data.length - 1]
+  const latestData = data[0]
   return (
     <Card>
       <CardHeader>
