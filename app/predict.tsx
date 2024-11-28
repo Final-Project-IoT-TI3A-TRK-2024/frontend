@@ -19,7 +19,7 @@ import {Flower2, TrendingUpDown} from "lucide-react";
 import {useState} from "react";
 
 const sendData = async (crop_type, temperature, humidity, soil_moisture) => {
-  const response = await fetch(process.env.BACKEND_URL + "/predict", {
+  const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/predict", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

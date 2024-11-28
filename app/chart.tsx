@@ -31,7 +31,7 @@ type LiveChartProps = {
   icon: React.ElementType;
   label: string;
   color: string;
-  data: HumidityData | TemperatureData | soil_moistureData [];
+  data: any;
   key_name: string;
 }
 
