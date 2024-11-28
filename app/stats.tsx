@@ -9,11 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import {CloudOff, Droplet, HardDriveUpload, Thermometer, Waves, Wheat} from "lucide-react";
+import {CloudOff, Droplet, Thermometer, Waves, Wheat} from "lucide-react";
 import {LiveChart} from "@/app/chart";
 import {useEffect, useState} from "react";
 import { io } from "socket.io-client";
-import {Button} from "@/components/ui/button";
 import Predict from "@/app/predict";
 import {
   Alert,
@@ -33,12 +32,12 @@ type HumidityData = {
   humidity: number;
 }
 
-type SoilMoistureData = {
+type soil_moistureData = {
   timestamp: number;
   soil_moisture: number;
 }
 
-type SensorData = {
+export type SensorData = {
   timestamp: number;
   temperature: number;
   humidity: number;
@@ -48,29 +47,31 @@ type SensorData = {
 export default function Stats(){
   const [temperature, setTemperature] = useState([{timestamp: 0, temperature: 0}]);
   const [humidity, setHumidity] = useState([{timestamp: 0, humidity: 0}]);
-  const [soilMoisture, setSoilMoisture] = useState([{timestamp: 0, soil_moisture: 0}]);
+  const [soil_moisture, setsoil_moisture] = useState([{timestamp: 0, soil_moisture: 0}]);
   const [connected, setConnected] = useState(false);
   const [soilSensorStatus, setSoilSensorStatus] = useState(false);
+  const [data, setData] = useState<SensorData[]>();
 
   useEffect(() => {
     socket.on('data', (data) => {
       const json_data = JSON.parse(data.data);
       const temperatures: TemperatureData[] = [];
       const humidities: HumidityData[] = [];
-      const soilMoistures: SoilMoistureData[] = [];
+      const soil_moistures: soil_moistureData[] = [];
 
       json_data.forEach((item: SensorData) => {
         temperatures.push({timestamp: item.timestamp, temperature: item.temperature});
         humidities.push({timestamp: item.timestamp, humidity: item.humidity});
-        soilMoistures.push({timestamp: item.timestamp, soil_moisture: item.soil_moisture});
+        soil_moistures.push({timestamp: item.timestamp, soil_moisture: item.soil_moisture});
       });
 
+      setData(json_data);
       setHumidity(humidities);
       setTemperature(temperatures);
-      setSoilMoisture(soilMoistures);
+      setsoil_moisture(soil_moistures);
       setConnected(true);
 
-      // range soil moisture 800 - 1000 is indicate that the sensor is not placed in the soil correctly
+      // range soil moisture 800-1000 is indicated that the sensor is not placed in the soil correctly
       if (json_data[0].soil_moisture >= 750 && json_data[0].soil_moisture <= 1000) {
         setSoilSensorStatus(false);
       }else{
@@ -100,7 +101,7 @@ export default function Stats(){
         <CardDescription>
           <div className="flex items-center text-sm gap-2">
             <div className="text-gray-500 dark:text-gray-400 flex items-center gap-2">
-              <span className={`inline-block w-2 h-2 bg-[#${connected ? "09CE6B" : "F87171"}] rounded-full animate-ping duration-[5000]`}/>
+              <span className={`inline-block w-2 h-2 bg-[#${connected ? "09CE6B" : "F87171"}] rounded-full animate-ping`}/>
               <span>{connected ? "Live data stream" : "Data stream is currently unavailable"}</span>
             </div>
           </div>
@@ -137,18 +138,18 @@ export default function Stats(){
             <LiveChart label="Humidity" icon={Droplet} color={"blue"} data={humidity} key_name="humidity"/>
           </div>
           <div>
-            <LiveChart label="Soil Moisture" icon={Waves} color={"brown"} data={soilMoisture} key_name="soil_moisture"/>
+            <LiveChart label="Soil Moisture" icon={Waves} color={"brown"} data={soil_moisture} key_name="soil_moisture"/>
           </div>
         </div>
       </CardContent>
       <CardFooter>
         <div className="flex gap-4 items-center justify-between flex-col sm:flex-row">
-          <Predict/>
-          <Button
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent gap-2 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+          <Predict data={data}/>
+          {/*<Button
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-[#4DA674] text-background gap-2 hover:bg-[#41955F] dark:hover:bg-[#5DB686] focus:ring-2 focus:ring-offset-2 focus:ring-[#4DA674] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
             rel="noopener noreferrer"
           ><HardDriveUpload/> Collect Dataset
-          </Button>
+          </Button>*/}
         </div>
       </CardFooter>
     </Card>
