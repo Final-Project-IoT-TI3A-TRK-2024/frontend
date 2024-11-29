@@ -17,10 +17,17 @@ import {
 import {Button} from "@/components/ui/button";
 import {Flower2, TrendingUpDown} from "lucide-react";
 import {useState} from "react";
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-const sendData = async (crop_type, temperature, humidity, soil_moisture) => {
+type ValidationError = Record<string, string[]>;
+interface PredictResponse {
+  prediction: boolean | null;
+  errors?: ValidationError;
+}
+const sendData = async (
+  crop_type: number,
+  temperature: number,
+  humidity: number,
+  soil_moisture: number
+): Promise<PredictResponse> => {
   const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/predict", {
     method: "POST",
     headers: {
@@ -37,9 +44,7 @@ const sendData = async (crop_type, temperature, humidity, soil_moisture) => {
   return response.json()
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-export default function Predict({data}) {
+export default function Predict({data}: {data: any}) {
   const latest_data = data?.[0] || {
     temperature: 0,
     humidity: 0,
@@ -49,6 +54,7 @@ export default function Predict({data}) {
   const [prediction, setPrediction] = useState(null)
   const [predicted, setPredicted] = useState(false)
   const [selectedCrop, setSelectedCrop] = useState("");
+  const [error, setError] = useState<ValidationError | null>(null);
 
   const cropOptions = [
     { value: "1", label: "Wheat" },
@@ -63,7 +69,15 @@ export default function Predict({data}) {
   ];
 
   const predictData = async () => {
-    const response = await sendData(1, latest_data.temperature, latest_data.humidity, latest_data.soil_moisture)
+    const intSelectedCrop = parseInt(selectedCrop)
+    const response = await sendData(intSelectedCrop, latest_data.temperature, latest_data.humidity, latest_data.soil_moisture)
+    if (response.errors) {
+      setError(response.errors)
+    }else{
+      setError(null)
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     setPrediction(response.prediction)
     setPredicted(true)
   }
@@ -144,7 +158,7 @@ export default function Predict({data}) {
           <Button onClick={predictData}>Predict</Button>
         </DialogFooter>
         <div className="flex items-center gap-4">
-          {predicted && prediction ?
+          {predicted && prediction && !error ?
             <Alert>
               <Flower2 className="h-6 w-6"/>
               <AlertTitle><strong>Yes</strong></AlertTitle>
@@ -155,7 +169,7 @@ export default function Predict({data}) {
             : null
           }
 
-          {predicted && !prediction ?
+          {predicted && !prediction && !error ?
             <Alert variant={'destructive'}>
               <Flower2 className="h-6 w-6"/>
               <AlertTitle><strong>No</strong></AlertTitle>
@@ -163,6 +177,21 @@ export default function Predict({data}) {
               The crop does not require irrigation.
             </AlertDescription>
           </Alert>
+            : null
+          }
+
+          {error ?
+            <Alert variant={'destructive'}>
+              <Flower2 className="h-6 w-6"/>
+              <AlertTitle><strong>Error</strong></AlertTitle>
+              <AlertDescription>
+                {Object.entries(error).map(([field, messages]) => (
+                  <div key={field}>
+                    <strong>{field}:</strong> {Array.isArray(messages) ? messages.join(', ') : messages}
+                  </div>
+                ))}
+              </AlertDescription>
+            </Alert>
             : null
           }
 
