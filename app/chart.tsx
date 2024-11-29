@@ -17,7 +17,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import {soil_moistureData, HumidityData, TemperatureData} from "@/app/stats";
 import React from "react";
 
 const chartConfig = {
