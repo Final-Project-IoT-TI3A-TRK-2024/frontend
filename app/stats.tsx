@@ -44,13 +44,22 @@ export type SensorData = {
   soil_moisture: number;
 }
 
-export default function Stats(){
+export default function Stats() {
   const [temperature, setTemperature] = useState([{timestamp: 0, temperature: 0}]);
   const [humidity, setHumidity] = useState([{timestamp: 0, humidity: 0}]);
   const [soil_moisture, setsoil_moisture] = useState([{timestamp: 0, soil_moisture: 0}]);
   const [connected, setConnected] = useState(false);
   const [soilSensorStatus, setSoilSensorStatus] = useState(false);
   const [data, setData] = useState<SensorData[]>();
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = /Mobile|Android|iP(hone|od|ad)/i.test(navigator.userAgent);
+    setIsMobile(checkMobile);
+  }, []);
+
+  const grid = isMobile ? "grid-cols-1" : "grid-cols-3";
 
   useEffect(() => {
     socket.on('data', (data) => {
@@ -130,7 +139,7 @@ export default function Stats(){
             </Alert>
           </div>
         ) : null}
-        <div className="grid grid-cols-3 gap-4">
+        <div className={`grid ${grid} gap-4`}>
           <div>
             <LiveChart label="Temperature" icon={Thermometer} color={"red"} data={temperature} key_name="temperature"/>
           </div>
